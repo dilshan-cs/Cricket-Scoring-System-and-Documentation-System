@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Cricket Scorer</h1>
+            <div class="header-buttons">
+                <button class="new-match-btn" onclick="showMatchOverview()">Match Overview</button>
+                <button class="new-match-btn" onclick="onNewPlayersClick()">New Players</button>
+                <button class="new-match-btn" onclick="onNewMatchClick()">New Match</button>
+            </div>
+        </header>
+        <div class="main-content">
+            <div class="left-column">
+                <div class="team-score-card">
+                    <div class="team-info">
+                        <!-- <span class="trophy">🏆</span> -->
+                        <span class="team-name" id="team-name">Team-Name</span>
+                        <span class="inning-badge" id="inning-badge" onclick="swapCurrentInning()">Inning 1</span>
+                        <!-- <button class="inning-badge" id="inning-badge" onclick="swapCurrentInning()">Inning 1</button> -->
+                        <!-- <button class="new-match-btn" onclick="swapCurrentInning()">Swap Inning</button> -->
+                        <!-- HTML -->
+
+                    </div>
+                    <div class="score-info">
+                        <div class="score-main">
+                            <span class="score-value" id="team-score">0/0</span>
+                            <span class="score-label">Runs/Wickets</span>
+                            <div class="run-rate">
+                                <span id="current-run-rate">0.0</span>
+                            </div>
+                        </div>
+                        <div class="overs-info">
+                            <span class="overs-value" id="team-overs">0.0</span>
+                            <span class="overs-label">Overs</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- batsmen section -->
+                <div class="section-header">
+                    <span>Batsmen</span>
+
+                </div>
+                <div class="batsman-card-active" id="batsman-1-card" onclick="setStriker(0)">
+                    <div class="batsman-info">
+                        <div class="batsman-name-row">
+                            <span class="batsman-name" id="batsman-1-name">Batsmen-1-</span>
+                            <span class="striker-indicator1" id="striker-indicator1">●</span>
+                        </div>
+                        <div class="batsman-stats">
+                            <span>Balls:<span class="batsman-1-ball" id="batsman-1-ball">0</span></span>
+                            <span>4s:<span class="batsman-1-fours" id="batsman-1-fours">0</span></span>
+                            <span>6s:<span class="batsman-1-sixes" id="batsman-1-sixes">0</span></span>
+                            <span>Strike-Rate:<span class="batsman-1-sr" id="batsman-1-sr">0.00</span></span>
+                        </div>
+                    </div>
+                    <div class="batsman-score" id="batsman-1-score">0</div>
+                </div>
+                <div class="batsman-card" id="batsman-2-card" onclick="setStriker(1)">
+                    <div class="batsmen-info">
+                        <div class="batsmen-name-row">
+                            <span class="batsman-name" id="batsman-2-name">Batsmen-2-</span>
+                            <span class="striker-indicator2" id="striker-indicator2">●</span>
+                        </div>
+                        <div class="batsman-stats">
+                            <span>Balls:<span class="batsman-2-ball" id="batsman-2-ball">0</span></span>
+                            <span>4s:<span class="batsman-2-fours" id="batsman-2-fours">0</span></span>
+                            <span>6s:<span class="batsman-2-sixes" id="batsman-2-sixes">0</span></span>
+                            <span>Strike-Rate:<span class="batsman-2-sr" id="batsman-2-sr">0.00</span></span>
+                        </div>
+                    </div>
+                    <div class="batsman-score" id="batsman-2-score">0</div>
+                </div>
+                <!-- bowler section -->
+                <div class="section-header">
+                    <span>Bowler</span>
+                    <button class="add-bowler-btn" id="add-bowler-btn" onclick="onNewBowlerClick()">+ Add New
+                        Bowler</button>
+                </div>
+                <div class="bowler-card">
+                    <div class="bowler-info">
+                        <span class="bowler-name" id="bowler-id"></span>
+                        <div class="bowler-stats">
+                            <span>Overs : <span class="bowler-overs" id="bowler-overs">0</span></span>
+                            <span>Economy : <span class="bowler-economy" id="bowler-economy">0.00</span></span>
+                        </div>
+                    </div>
+                    <div class="bowler-score" id="bowler-score">0-0</div>
+                </div>
+                <div class="this-over-card">
+                    <div class="this-over-header">This Over</div>
+                    <div class="this-over-content" id="this-over-content">No balls this over yet</div>
+                </div>
+            </div>
+            <div class="middle-column">
+                <div class="commentary-card">
+                    <div class="commentary-header">Ball by Ball Commentry</div>
+                    <div class="commentary-card-list" id="commentary-card-list"></div>
+                </div>
+                <div class="fow-card">
+                    <div class="fow-header">Fall of Wickets</div>
+                    <div class="fow-list" id="fow-list">
+                        <!-- <div class="commentary-item">
+                            <div class="commentary-wicket">Wickets</div>
+                            <div class="commentary-runs">Runs</div>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+            <div class="right-column">
+                <div class="controls-card">
+                    <!-- Runs Section -->
+                    <div class="control-section">
+                        <div class="control-header">Runs</div>
+                        <div class="runs-buttons">
+                            <button class="run-btn" onclick="addRuns(0)">0</button>
+                            <button class="run-btn" onclick="addRuns(1)">1</button>
+                            <button class="run-btn" onclick="addRuns(2)">2</button>
+                            <button class="run-btn" onclick="addRuns(3)">3</button>
+                            <button class="run-btn-boundary" onclick="addRuns(4)">4</button>
+                            <button class="run-btn-boundary" onclick="addRuns(6)">6</button>
+                        </div>
+                        <div class="custom-input-row">
+                            <input class="custom-runs-input" id="custom-runs-input" type="number" min="0"
+                                placeholder="Custom runs" />
+                            <button class="custom-add-btn" onclick="addCustomRuns()">Add</button>
+                        </div>
+                    </div>
+                    <!-- Extra Runs Section -->
+                    <div class="control section">
+                        <div class="control-header">Extra-Runs</div>
+                        <div class="custom-input-row">
+                            <select class="custom-extra-select" id="custom-extra-type">
+                                <option value="wide">Wide</option>
+                                <option value="noball">No Ball</option>
+                                <option value="bye">Bye</option>
+                                <option value="legbye">Leg-Bye</option>
+                            </select>
+                            <input class="custom-runs-input" id="custom-extra-runs-input" type="number" min="0"
+                                placeholder="Runs" />
+                            <button class="custom-add-btn" onclick="addCustomExtra()">Add</button>
+                        </div>
+                    </div>
+                    <div class="actions-section">
+                        <button class="wicket-btn" onclick="fallWickets()">WICKET</button>
+                        <div class="custom-input">
+                            <div class="custom-input-row">
+                                <input class="custom-runs-input-runout" id="custom-runs-input-runout" type="number"
+                                    min="0" placeholder="Runs" />
+                                <label><input type="checkbox" id="invalid-ball-radio" value="0"> Invalid Ball
+                                </label>
+                            </div>
+                            <button class="run-out-btn" onclick="fallWickets('run-out')">Run-Out</button>
+                        </div>
+                        <button class="undo-btn" onclick="handleUndo()"><span class="undo-icon">↶</span> UNDO</button>
+                    </div>
+                    <div class="match-info-panel">
+                        <div class="projected-score-section">
+                            <div class="control-header">Projected Score</div>
+                            <div class="projected-score-value" id="projected-score">--</div>
+                            <div class="projected-score-label" id="projected-score-label"></div>
+                        </div>
+                        <div class="requirement-section" id="requirement__section">
+                            <div class="section-header">Requirement</div>
+                            <div class="requirement__stats" id="requirement-stats">
+                                <span class="requirement__runs-value"></span>
+                                <span class="requirement__runs-label">Runs</span>
+                                <span class="requirement__balls-value"></span>
+                                <span class="requirement__balls-label">Balls</span>
+                            </div>
+                            <div class="requirement__rrr-label">Requird Run Rate</div>
+                            <div class="requirement__run-rate" id="requirement-run-rate"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <footer></footer>
+    </div>
+
+
+    <div class="modal-overlay" id="new-match-modal">
+        <div class="modal">
+            <h2>New Match</h2>
+            <p>Are you sure you want to start a new match?</p>
+            <div class="modal-actions">
+                <button class="btn-confirm" id="new-match-yes" onclick="resetMatch()">Yes</button>
+                <button class="btn-cancel" id="new-match-no" onclick="doNothing()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-overlay" id="new-players-modal">
+        <div class="modal-container">
+
+            <div class="modal-section" id="inning-selection-section">
+                <p class="section-label">Select Inning</p>
+                <div class="inning-selector">
+                    <label><input type="radio" name="inning-radio" value="1" checked> Inning 1</label>
+                    <label><input type="radio" name="inning-radio" value="2"> Inning 2</label>
+                </div>
+            </div>
+
+            <div class="modal-section" id="team-name-section">
+                <p class="section-label">Add team name</p>
+                <input class="modal-input" id="team-name-input" placeholder="Team name" />
+                <!-- <button class="modal-btn modal-btn--secondary" id="set-team-btn" onclick="handleSetTeamName()">Set Team</button> -->
+            </div>
+
+            <div class="modal-section" id="batsmen-section">
+                <h2 class="section-title">New Players</h2>
+                <div class="input-row" id="batsmen-inputs">
+                    <!-- <input class="modal-input" id="striker-input" placeholder="Striker" /> -->
+                    <!-- <input class="modal-input" id="non-striker-input" placeholder="Non-striker" /> -->
+                    <input class="modal-input" id="batsman-input-1-" placeholder="Opening-Striker" />
+                    <input class="modal-input" id="batsman-input-2-" placeholder="Opening-nonStrker" />
+                    <input class="modal-input" id="batsman-input-3-" placeholder="Batsman-3-" />
+                    <input class="modal-input" id="batsman-input-4-" placeholder="Batsman-4-" />
+                    <input class="modal-input" id="batsman-input-5-" placeholder="Batsman-5-" />
+                    <input class="modal-input" id="batsman-input-6-" placeholder="Batsman-6-" />
+                    <input class="modal-input" id="batsman-input-7-" placeholder="Batsman-7-" />
+                    <input class="modal-input" id="batsman-input-8-" placeholder="Batsman-8-" />
+                    <input class="modal-input" id="batsman-input-9-" placeholder="Batsman-9-" />
+                    <input class="modal-input" id="batsman-input-10-" placeholder="Batsman-10-" />
+                    <input class="modal-input" id="batsman-input-11-" placeholder="Batsman-11-" />
+                    <!-- <button class="modal-btn modal-btn--secondary" id="set-openers-btn" onclick="handleSetOpeningBatsmen()">Set Openers</button> -->
+                </div>
+            </div>
+
+            <!-- <div class="modal-section" id="bowler-section">
+                <p class="section-label">Add Bowler</p>
+                <div class="input-row" id="bowler-inputs">
+                    <input class="modal-input" id="bowler-input" placeholder="Bowler" />
+                </div>
+            </div> -->
+            <div class="modal-section" id="total-overs-section">
+                <p class="section-label">Add Total Overs</p>
+                <div class="input-row" id="total-overs-inputs">
+                    <input class="modal-input" id="total-overs-input" placeholder="Total Overs" />
+                </div>
+            </div>
+
+            <!-- Confirm / Cancel -->
+            <div class="modal-footer" id="modal-actions">
+                <button class="modal-btn modal-btn--confirm" id="confirm-btn"
+                    onclick="handleNewPlayer()">Confirm</button>
+                <button class="modal-btn modal-btn--cancel" id="cancel-btn" onclick="doNothing2()">Cancel</button>
+            </div>
+
+        </div>
+    </div>
+    <div class="modal-overlay" id="confirmation-players-stored">
+        <div class="modal success-modal">
+            <div class="success-icon" aria-hidden="true">
+                <span class="success-icon-check"></span>
+            </div>
+            <h2 id="success-title">Success!</h2>
+            <p id="success-message">Data stored successfully.</p>
+        </div>
+    </div>
+
+
+
+
+    <div id="new-bowler-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h2 class="modal-title">🏏 New Bowler</h2>
+            <p class="modal-subtitle">Who will bowl the next over?</p>
+            <div id="bowler-options-list" class="batsman-options"></div>
+            <!-- <input class="modal-input" id="bowler-name-input" placeholder="Enter Bowler Name" />
+            <div class="modal-actions">
+                <button class="btn-confirm" onclick="confirmNewBowler()">Confirm</button>
+            </div> -->
+            <button class="cancel-batsman-btn" onclick="doNothingBowler()">Cancel</button>
+        </div>
+    </div>
+    <!-- New Batsman Modal -->
+    <div id="new-batsman-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h2 class="modal-title">🏏 New Batsman</h2>
+            <p class="modal-subtitle" id="modal-subtitle">Striker is out! Who's coming in?</p>
+            <div id="batsman-options-list" class="batsman-options"></div>
+            <button class="cancel-batsman-btn" onclick="doNothing3()">Cancel</button>
+
+            <!-- <div class="modal-actions">
+          <button class="btn-confirm" onclick="confirmNewBatsman()">Confirm</button>
+        </div> -->
+        </div>
+    </div>
+
+    <div id="new-inning-modal" class="modal-overlay">
+        <div class="modal-box">
+            <h2 class="modal-title">🏏 New Inning</h2>
+            <p class="modal-subtitle" id="modal-subtitle">Inning One is over! Let's Start second inning</p>
+            <button class="cancel-batsman-btn" onclick="doNothing4()">Cancel</button>
+        </div>
+    </div>
+
+
+    <!-- Result Modal -->
+    <div class="modal-overlay" id="result-modal">
+        <div class="modal result-modal-content">
+            <div class="result-icon">🏆</div>
+            <h2 id="result-title">Match Finished!</h2>
+            <p id="result-message"></p>
+            <div class="modal-actions result-actions">
+                <button class="btn-confirm" onclick="generatePDF()">Download PDF Report</button>
+                <button class="btn-cancel" onclick="closeResultModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal-overlay" id="second-inning-modal">
+        <div class="modal result-modal-content">
+            <h2 id="result-title">The First inning is over</h2>
+            <p id="result-message">Let's move to second inning</p>
+            <div class="modal-actions result-actions">
+                <button class="btn-confirm" onclick="swapCurrentInning()">Start second Inning</button>
+                <button class="btn-cancel" onclick="doNothing5()">Close</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Hidden Report Template for PDF -->
+    <div class="modal-overlay" id="match-overview-modal">
+        <div class="modal result-modal-content" style="max-height: 80vh; overflow-y: auto;">
+            <header class="modal-header">
+                <h2>Match Overview</h2>
+            </header>
+            <div class="modal-content">
+                <div class="modal-section">
+                    <h3 class="section-label-overview">Inning 1 <span id="team-1"></span></h3>
+                    <p id="inning-1-total-run"></p>
+                    <div id="inning-1-batsmen-table" class="report-table"></div>
+                    <div id="inning-1-bowlers-table" class="report-table"></div>
+                    <div id="inning-1-extraRuns-section">Extra : <span id="inning-1-extraRuns"></span></div>
+                </div>
+                <div class="modal-section" style="margin-top: 20px;">
+                    <h3 class="section-label-overview">Inning 2 <span id="team-2"></span></h3>
+                    <p id="inning-2-total-run"></p>
+                    <div id="inning-2-batsmen-table" class="report-table"></div>
+                    <div id="inning-2-bowlers-table" class="report-table"></div>
+                    <div id="inning-2-extraRuns-section">Extra : <span id="inning-2-extraRuns"></span></div>
+                </div>
+            </div>
+            <div class="modal-actions result-actions" style="margin-top: 20px;">
+                <button class="btn-confirm" onclick="generatePDF()">Download PDF Report</button>
+                <button class="btn-cancel" onclick="closeMatchOverviewModal()">Close</button>
+            </div>
+        </div>
+    </div>
+    <div id="match-report-template" style="display: none;">
+        <div class="report-container">
+            <header class="report-header">
+                <h1>Match Summary Report</h1>
+                <p id="report-date"></p>
+            </header>
+            <div class="report-section">
+                <h2>Result</h2>
+                <p id="report-result-text" class="highlight-result"></p>
+            </div>
+            <div class="report-grid">
+                <div class="report-inning">
+                    <h3>Inning 1: Batsmen <span id="report-i1-team"></span></h3>
+                    <p class="report-score" id="report-i1-score"></p>
+                    <div id="report-i1-batsmen" class="report-table"></div>
+                </div>
+                <div class="report-inning">
+                    <h3>Inning 2: Batsmen <span id="report-i2-team"></span></h3>
+                    <p class="report-score" id="report-i2-score"></p>
+                    <div id="report-i2-batsmen" class="report-table"></div>
+                </div>
+            </div>
+            <div class="report-grid">
+                <div class="report-inning">
+                    <h3>Inning 1: Bowlers <span id="report-i2-team-bowler"></span></h3>
+                    <p class="report-score" id="report-i1-bowler-score"></p>
+                    <div id="report-i1-bowlers-table" class="report-table"></div>
+                </div>
+                <div class="report-inning">
+                    <h3>Inning 2: Bowlers<span id="report-i1-team-bowler"></span></h3>
+                    <p class="report-score" id="report-i2-bowler-score"></p>
+                    <div id="report-i2-bowlers-table" class="report-table"></div>
+                </div>
+            </div>
+            <div class="report-section">
+                <h3>Match Commentary Highlights</h3>
+                <div class="report-commentary-container">
+                    <h4>Inning-1-</h4>
+                    <div id="report-commentary-1" class="report-commentary-list"></div>
+                    <h4>Inning-2-</h4>
+                    <div id="report-commentary-2" class="report-commentary-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
