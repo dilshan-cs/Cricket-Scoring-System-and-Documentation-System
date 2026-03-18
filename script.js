@@ -115,16 +115,13 @@ function recordBall(ballValue, description, isLegalBall) {
 
   // Check for over end (6 legal balls)
   // const legalBallsInOver = matchData.currentOver.filter(b => b !== 'w' && b !== 'nb').length;
-  document.getElementById("add-bowler-btn").classList.add("show");
   const ov = matchData.bowler[0].overs;
   const whole = Math.floor(ov);
   const decimal = ov - whole;
   const balls = Math.round(decimal * 10);
-
+  
   if (balls === 0 && whole > 0) {
-    // updateDisplay();
-    handleOverEnd();
-    swapStriker();
+    document.getElementById("add-bowler-btn").classList.add("show");
   }
 
 
@@ -203,6 +200,17 @@ function onNewBowlerClick() {
 
 function confirmNewBowler(newName) {
   if (!newName) return;
+
+  const ov = matchData.bowler[0].overs;
+  const whole = Math.floor(ov);
+  const decimal = ov - whole;
+  const balls = Math.round(decimal * 10);
+
+  if (balls === 0 && whole > 0) {
+    // updateDisplay();
+    handleOverEnd();
+    swapStriker();
+  }
 
   // Save current bowler's stats to history before replacing
   const currentBowler = matchData.bowler[0];
@@ -358,11 +366,11 @@ function addCustomExtra() {
     matchData.totalRuns += (xRuns + 1); // 1 for wide + runs
     bowlerIs.runs += (xRuns + 1);
     if (xRuns > 0) {
-      recordBall(`w${xRuns}`, `WIDE (${xRuns + 1} runs)`, false); // Not a legal ball
+      recordBall(`WD${xRuns}`, `WIDE (${xRuns + 1} runs)`, false); // Not a legal ball
       matchData.extraRuns += (xRuns + 1);
     }
     else {
-      recordBall('w', `WIDE (${xRuns + 1} runs)`, false); // Not a legal ball      
+      recordBall('WD', `WIDE (${xRuns + 1} runs)`, false); // Not a legal ball      
       matchData.extraRuns += (xRuns + 1);
     }
   }
@@ -724,7 +732,7 @@ function updateThisOver() {
   el.innerHTML = matchData.currentOver.map(b => {
     const span = document.createElement('span');
     if (b === 'W' || b === 'W1' || b === 'W2' || b === 'W3' || b === 'W4' || b === 'W6') span.className = 'ball ball-W';
-    else if (b === 'w' || b === 'w1' || b === 'w2' || b === 'w3' || b === 'w4' || b === 'w6') span.className = 'ball ball-w';
+    else if (b === 'WD' || b === 'WD1' || b === 'WD2' || b === 'WD3' || b === 'WD4' || b === 'WD6') span.className = 'ball ball-w';
     else if (b === 'nb' || b === 'nb1' || b === 'nb2' || b === 'nb3' || b === 'nb4' || b === 'nb6') span.className = 'ball ball-nb';
     else if (b === 'b' || b === 'b1' || b === 'b2' || b === 'b3' || b === 'b4' || b === 'b6') span.className = 'ball ball-b';
     else if (b === 'lb' || b === 'lb1' || b === 'lb2' || b === 'lb3' || b === 'lb4' || b === 'lb6') span.className = 'ball ball-lb';
