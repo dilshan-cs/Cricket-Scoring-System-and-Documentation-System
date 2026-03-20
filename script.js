@@ -31,6 +31,28 @@ let currentInning = 1;
 
 // Global reference that points to the data of the active inning
 let matchData = inning1Data;
+const syncChannel = new BroadcastChannel('cricket_scoring_sync');
+
+// Listen for requests for current match data (e.g. from a newly opened window)
+syncChannel.onmessage = (event) => {
+  if (event.data.type === 'REQUEST_DATA') {
+    broadcastUpdate();
+  }
+};
+
+function broadcastUpdate() {
+  syncChannel.postMessage({
+    type: 'UPDATE_DATA',
+    matchData: matchData,
+    currentInning: currentInning,
+    inning1Data: inning1Data,
+    inning2Data: inning2Data
+  });
+}
+
+function openPopOutScoreboard() {
+  window.open('scoreboard.html', 'Cricket Scoreboard', 'width=1000,height=1000,scrollbars=yes');
+}
 
 
 let undoStack = [];
@@ -119,9 +141,12 @@ function recordBall(ballValue, description, isLegalBall) {
   const whole = Math.floor(ov);
   const decimal = ov - whole;
   const balls = Math.round(decimal * 10);
-  
+
   if (balls === 0 && whole > 0) {
     document.getElementById("add-bowler-btn").classList.add("show");
+    // updateDisplay();
+    // handleOverEnd();
+    // swapStriker();
   }
 
 
@@ -250,6 +275,7 @@ function confirmNewBowler(newName) {
     }];
   }
 
+
   document.getElementById('new-bowler-modal').classList.remove('show');
   updateDisplay();
 }
@@ -297,6 +323,7 @@ function fallWickets(type) {
   }
   else {
     bowlerIs.wickets += 1;
+    currentBatsman.balls += 1;
     recordBall('W', `WICKET! ${currentBatsman.name} is OUT`, true);
   }
 
@@ -576,6 +603,7 @@ function updateDisplay(runs) {
   showRequirementSection();
   updateInningBadge();
   updateFallOfWickets();
+  broadcastUpdate();
 }
 
 function updateFallOfWickets() {
@@ -764,6 +792,7 @@ function updateProjectedScore() {
   const runRate1 = (matchData.totalRuns / (totalBalls / 6)).toFixed(2);
   matchData.runRate = runRate1;
   const projected = Math.round(runRate * totalOvers);
+  matchData.projectedScore = projected;
   el.textContent = projected;
   el1.textContent = matchData.runRate;
 }
@@ -1074,6 +1103,7 @@ function closeMatchOverviewModal() {
 function showResult(message) {
   document.getElementById('result-message').textContent = message;
   document.getElementById('result-modal').classList.add('show');
+  syncChannel.postMessage({ type: 'MATCH_FINISHED', message: message });
 }
 
 function closeResultModal() {
