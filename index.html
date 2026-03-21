@@ -150,6 +150,9 @@
                                 placeholder="Runs" />
                             <button class="custom-add-btn" onclick="addCustomExtra()">Add</button>
                         </div>
+                        <div class="custom-input-row">
+                            <label><input type="checkbox" id="bye-runs-for-noball" value="0">Bye-Runs-for-noball</label>
+                        </div>
                     </div>
                     <div class="actions-section">
                         <button class="wicket-btn" onclick="fallWickets()">WICKET</button>
@@ -388,11 +391,13 @@
                     <h3>Inning 1: Bowlers <span id="report-i2-team-bowler"></span></h3>
                     <p class="report-score" id="report-i1-bowler-score"></p>
                     <div id="report-i1-bowlers-table" class="report-table"></div>
+                    <h3>Inning 1: Extra-Runs <span id="report-i1-Extra-Runs"></span></h3>
                 </div>
                 <div class="report-inning">
                     <h3>Inning 2: Bowlers<span id="report-i1-team-bowler"></span></h3>
                     <p class="report-score" id="report-i2-bowler-score"></p>
                     <div id="report-i2-bowlers-table" class="report-table"></div>
+                    <h3>Inning 2: Extra-Runs <span id="report-i2-Extra-Runs"></span></h3>
                 </div>
             </div>
             <div class="report-section">

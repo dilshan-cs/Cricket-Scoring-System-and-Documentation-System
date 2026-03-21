@@ -304,12 +304,12 @@ function fallWickets(type) {
       matchData.totalRuns += runs;
       bowlerIs.runs += runs;
       // currentBatsman.runs += runs;
-      currentBatsman.balls += 1;
+      // currentBatsman.balls += 1;
       document.getElementById('custom-runs-input-runout').value = '';
       invalidBallCheckBox.checked = false;
       // if (runs === 1 || runs === 3 || runs === 5) swapStriker();
       matchData.extraRuns += runs;
-      recordBall(`W${runs}`, `WICKET! ${currentBatsman.name} is RUN OUT with ${runs} runs`, false);
+      recordBall(`WR${runs}`, `WICKET! ${currentBatsman.name} is RUN OUT with ${runs} runs`, false);
     }
     else {
       matchData.totalRuns += runs;
@@ -318,7 +318,7 @@ function fallWickets(type) {
       currentBatsman.balls += 1;
       document.getElementById('custom-runs-input-runout').value = '';
       // if (runs === 1 || runs === 3 || runs === 5) swapStriker();
-      recordBall(`W${runs}`, `WICKET! ${currentBatsman.name} is RUN OUT with ${runs} runs`, true);
+      recordBall(`WR${runs}`, `WICKET! ${currentBatsman.name} is RUN OUT with ${runs} runs`, true);
     }
   }
   else {
@@ -402,41 +402,65 @@ function addCustomExtra() {
     }
   }
   else if (xRunsType === 'noball') {
-    matchData.totalRuns += (xRuns + 1); // 1 for nb + runs
-    bowlerIs.runs += (xRuns + 1);
-    const striker = matchData.batsmen.find(b => b.isStriker);
-    striker.runs += xRuns; // Runs from shot on No Ball count for batsman
-    if (xRuns > 0) {
-      recordBall(`nb${xRuns}`, `NO BALL (${xRuns + 1} runs)`, false); // Not a legal ball
-      matchData.extraRuns += 1;
+    const byeRunsForNoballCheckBox = document.getElementById('bye-runs-for-noball');
+    if (byeRunsForNoballCheckBox.checked) {
+      matchData.totalRuns += (xRuns + 1); // 1 for nb + runs
+      bowlerIs.runs += (xRuns + 1);
+      if (xRuns > 0) {
+        matchData.extraRuns += xRuns + 1;
+        recordBall(`nb${xRuns}`, `NO BALL (${xRuns + 1} runs)`, false); // Not a legal ball
+      }
+      else {
+        matchData.extraRuns += 1;
+        recordBall('nb', `NO BALL (${xRuns + 1} runs)`, false); // Not a legal ball
+      }
+      byeRunsForNoballCheckBox.checked = false;
     }
     else {
-      recordBall('nb', `NO BALL (${xRuns + 1} runs)`, false); // Not a legal ball
-      matchData.extraRuns += 1;
+      matchData.totalRuns += (xRuns + 1); // 1 for nb + runs
+      bowlerIs.runs += (xRuns + 1);
+      const striker = matchData.batsmen.find(b => b.isStriker);
+      striker.runs += xRuns; // Runs from shot on No Ball count for batsman
+      if (xRuns > 0) {
+        recordBall(`nb${xRuns}`, `NO BALL (${xRuns + 1} runs)`, false); // Not a legal ball
+        // matchData.extraRuns += 1;
+      }
+      else {
+        recordBall('nb', `NO BALL (${xRuns + 1} runs)`, false); // Not a legal ball
+        // matchData.extraRuns += 1;
+      }
     }
   }
   else if (xRunsType === 'bye') {
     matchData.totalRuns += xRuns;
     // Byes don't count for bowler runs, but they count for team runs
     if (xRuns > 0) {
-      recordBall(`b${xRuns}`, `BYE (${xRuns} runs)`, true); // Legal ball
       matchData.extraRuns += xRuns;
+      const striker = matchData.batsmen.find(b => b.isStriker);
+      striker.balls += 1;
+      recordBall(`b${xRuns}`, `BYE (${xRuns} runs)`, true); // Legal ball
     }
     else {
-      recordBall('b', `BYE (${xRuns} runs)`, true); // Legal ball
       matchData.extraRuns += xRuns;
+      const striker = matchData.batsmen.find(b => b.isStriker);
+      striker.balls += 1;
+      recordBall('b', `BYE (${xRuns} runs)`, true); // Legal ball
     }
   }
   else if (xRunsType === 'legbye') {
     matchData.totalRuns += xRuns;
     // Leg byes don't count for bowler runs, but they count for team runs
     if (xRuns > 0) {
-      recordBall(`lb${xRuns}`, `LEG BYE (${xRuns} runs)`, true); // Legal ball
+      const striker = matchData.batsmen.find(b => b.isStriker);
+      striker.balls += 1;
       matchData.extraRuns += xRuns;
+      recordBall(`lb${xRuns}`, `LEG BYE (${xRuns} runs)`, true); // Legal ball
     }
     else {
-      recordBall('lb', `LEG BYE (${xRuns} runs)`, true); // Legal ball
+      const striker = matchData.batsmen.find(b => b.isStriker);
+      striker.balls += 1;
       matchData.extraRuns += xRuns;
+      recordBall('lb', `LEG BYE (${xRuns} runs)`, true); // Legal ball
     }
   }
 
@@ -1045,7 +1069,8 @@ function generatePDF() {
   document.getElementById('report-i2-team').textContent = inning2Data.teamName;
   document.getElementById('report-i2-score').textContent = `${inning2Data.totalRuns}/${inning2Data.wickets} (${inning2Data.overs} ov)`;
 
-
+  document.getElementById('report-i1-Extra-Runs').textContent = inning1Data.extraRuns;
+  document.getElementById('report-i2-Extra-Runs').textContent = inning2Data.extraRuns;
 
   document.getElementById('report-i1-team-bowler').textContent = inning1Data.teamName;
   document.getElementById('report-i1-bowlers-table').innerHTML = formatBowler(inning1Data.pastOver.flat().concat(inning1Data.bowler));
