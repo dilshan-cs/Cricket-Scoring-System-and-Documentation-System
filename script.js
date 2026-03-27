@@ -28,6 +28,7 @@ const initialInningData = () => ({
 let inning1Data = initialInningData();
 let inning2Data = initialInningData();
 let currentInning = 1;
+let addBatsmen = true
 
 // Global reference that points to the data of the active inning
 let matchData = inning1Data;
@@ -153,6 +154,7 @@ function recordBall(ballValue, description, isLegalBall) {
   updateDisplay(typeof ballValue === 'number' ? ballValue : 0);
   if (matchData.overs === matchData.totalOvers) {
     if (currentInning === 1) {
+      addBatsmen = false;
       document.getElementById('new-inning-modal').classList.add('show');
       swapCurrentInning();
     }
@@ -332,14 +334,16 @@ function fallWickets(type) {
 
   const outBatsman = matchData.batsmen[strikerIndex];
   matchData.dismissedBatsmen.push(outBatsman);
-  matchData.wickets += 1;
+  // matchData.wickets += 1;
 
   // Record Fall of Wicket (Wickets-Runs format)
   // matchData.fallOfWickets.push(`${matchData.wickets}-${matchData.totalRuns} (${outBatsman.name}, ${matchData.overs})`);
   matchData.fallOfWickets.push(`${matchData.totalRuns}`);
 
   outBatsman.isOut = true;
-  openNewBatsmanModal();
+  if(addBatsmen === true){
+    openNewBatsmanModal();
+  }
   updateDisplay();
   checkWinCondition();
 }
