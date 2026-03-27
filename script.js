@@ -157,11 +157,11 @@ function recordBall(ballValue, description, isLegalBall) {
       swapCurrentInning();
     }
   }
+  updateDisplay()
   checkWinCondition();
   if ((inning1Data.overs === inning1Data.totalOvers || inning1Data.wickets === 10) && currentInning === 1) {
     isInningDone();
   }
-  updateDisplay()
 }
 
 function incrementOvers(overs) {
@@ -309,6 +309,7 @@ function fallWickets(type) {
       invalidBallCheckBox.checked = false;
       // if (runs === 1 || runs === 3 || runs === 5) swapStriker();
       matchData.extraRuns += runs;
+      matchData.wickets+=1;
       recordBall(`WR${runs}`, `WICKET! ${currentBatsman.name} is RUN OUT with ${runs} runs`, false);
     }
     else {
@@ -318,12 +319,14 @@ function fallWickets(type) {
       currentBatsman.balls += 1;
       document.getElementById('custom-runs-input-runout').value = '';
       // if (runs === 1 || runs === 3 || runs === 5) swapStriker();
+      matchData.wickets+=1;
       recordBall(`WR${runs}`, `WICKET! ${currentBatsman.name} is RUN OUT with ${runs} runs`, true);
     }
   }
   else {
     bowlerIs.wickets += 1;
     currentBatsman.balls += 1;
+    matchData.wickets+=1;
     recordBall('W', `WICKET! ${currentBatsman.name} is OUT`, true);
   }
 
@@ -337,8 +340,8 @@ function fallWickets(type) {
 
   outBatsman.isOut = true;
   openNewBatsmanModal();
-  checkWinCondition();
   updateDisplay();
+  checkWinCondition();
 }
 
 
