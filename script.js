@@ -1133,52 +1133,56 @@ function generateDocx() {
   document.getElementById('report-commentary-1').innerHTML = inning1Data.commentary.map(c => `<p>${c}</p>`).join('');
   document.getElementById('report-commentary-2').innerHTML = inning2Data.commentary.map(c => `<p>${c}</p>`).join('');
 
-  // const opt = {
-  //   margin: 1,
-  //   filename: `Match_Report_${inning1Data.teamName}_vs_${inning2Data.teamName}.docx`,
-  //   image: { type: 'jpeg', quality: 0.98 },
-  //   html2canvas: { scale: 2 },
-  //   jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-  // };
+  // for pdf
 
-  // html2pdf().set(opt).from(element).save();
+  const opt = {
+    margin: 1,
+    filename: `Match_Report_${inning1Data.teamName}_vs_${inning2Data.teamName}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(element).save();
 
 
-  const filename = `Match_Report_${inning1Data.teamName}_vs_${inning2Data.teamName}.docx`;
+  // For docx
 
-  const styles = `
-    <style>
-      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-      h1 { color: #2c3e50; text-align: center; }
-      h2 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
-      h3 { color: #2980b9; }
-      table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-      th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-      th { background-color: #f2f2f2; }
-      .highlight-result { font-weight: bold; color: #e74c3c; font-size: 1.2em; }
-      .report-score { font-weight: bold; margin-bottom: 10px; }
-      .report-inning { margin-bottom: 20px; }
-    </style>
-  `;
+  // const filename = `Match_Report_${inning1Data.teamName}_vs_${inning2Data.teamName}.docx`;
 
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <title>Match Report</title>
-        ${styles}
-      </head>
-      <body>
-        <div class="report-container">
-          ${element.innerHTML}
-        </div>
-      </body>
-    </html>
-  `;
+  // const styles = `
+  //   <style>
+  //     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  //     h1 { color: #2c3e50; text-align: center; }
+  //     h2 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+  //     h3 { color: #2980b9; }
+  //     table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+  //     th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+  //     th { background-color: #f2f2f2; }
+  //     .highlight-result { font-weight: bold; color: #e74c3c; font-size: 1.2em; }
+  //     .report-score { font-weight: bold; margin-bottom: 10px; }
+  //     .report-inning { margin-bottom: 20px; }
+  //   </style>
+  // `;
 
-  const converted = htmlDocx.asBlob(htmlContent);
-  saveAs(converted, filename);
+  // const htmlContent = `
+  //   <!DOCTYPE html>
+  //   <html>
+  //     <head>
+  //       <meta charset="utf-8">
+  //       <title>Match Report</title>
+  //       ${styles}
+  //     </head>
+  //     <body>
+  //       <div class="report-container">
+  //         ${element.innerHTML}
+  //       </div>
+  //     </body>
+  //   </html>
+  // `;
+
+  // const converted = htmlDocx.asBlob(htmlContent);
+  // saveAs(converted, filename);
 
   setTimeout(() => {
     element.style.display = 'none';
