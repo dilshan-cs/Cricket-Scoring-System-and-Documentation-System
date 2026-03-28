@@ -378,7 +378,7 @@ function fallWickets(type) {
   matchData.fallOfWickets.push(`${matchData.totalRuns}`);
 
   outBatsman.isOut = true;
-  if (currentInning === 2) {
+  if (matchData.currentInning === 2) {
     addBatsmen = true;
   }
   console.log(addBatsmen);
