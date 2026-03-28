@@ -381,6 +381,7 @@ function fallWickets(type) {
   if (addBatsmen === true) {
     openNewBatsmanModal();
   }
+  addBatsmen = true;
   updateDisplay();
   checkWinCondition();
 
