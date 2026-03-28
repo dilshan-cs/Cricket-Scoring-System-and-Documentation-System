@@ -1,3 +1,24 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyA1MOp2UolylrRwSJhVM1ECBvhBKmrdVPc",
+  authDomain: "cricket-scoring-data.firebaseapp.com",
+  databaseURL: "https://cricket-scoring-data-default-rtdb.firebaseio.com",
+  projectId: "cricket-scoring-data",
+  storageBucket: "cricket-scoring-data.firebasestorage.app",
+  messagingSenderId: "1069597107626",
+  appId: "1:1069597107626:web:5e540bca96b6c0951ab7d3",
+  measurementId: "G-C59179B1ZJ"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+
 // Initial data template
 const initialInningData = () => ({
   teamName: 'Team-Name',
@@ -11,6 +32,7 @@ const initialInningData = () => ({
   remainingBalls: 0,
   remainingOvers: 0,
   rrr: 0.0,
+  projectedScore: 0,
   batsmen: [
     { name: 'Batsman-1-', runs: 0, balls: 0, fours: 0, sixes: 0, isStriker: true, isOut: false },
     { name: 'Batsman-2-', runs: 0, balls: 0, fours: 0, sixes: 0, isStriker: false, isOut: false }
@@ -55,6 +77,23 @@ function openPopOutScoreboard() {
   window.open('scoreboard.html', 'Cricket Scoreboard', 'width=1000,height=1000,scrollbars=yes');
 }
 
+let matchId1;
+let matchId2;
+if (matchData === inning1Data) {
+  matchId1 = "MATCH_" + Date.now() + "inning1"; // Generate a unique ID based on timestamp  
+}
+
+function saveMatchToFirebase() {
+  const db = getDatabase(app);
+  if (matchData === inning1Data) {
+    const matchRef = ref(db, 'matches/' + matchId1);
+    set(matchRef, matchData);
+  }
+  else if (matchData === inning2Data) {
+    const matchRef = ref(db, 'matches/' + matchId2);
+    set(matchRef, matchData);
+  }
+}
 
 let undoStack = [];
 let playersStoredToastTimer = null;
@@ -524,6 +563,9 @@ function handleNewPlayer() {
   const selectedInning = document.querySelector('input[name="inning-radio"]:checked').value;
   currentInning = parseInt(selectedInning, 10);
   matchData = currentInning === 1 ? inning1Data : inning2Data;
+  if (currentInning === 2) {
+    matchId2 = "MATCH_" + Date.now() + "inning2"; // Generate a unique ID based on timestamp
+  }
   document.getElementById("add-bowler-btn").classList.add("show");
 
   // Now apply inputs to the selected inning's data
@@ -1149,3 +1191,33 @@ function closeResultModal() {
 //   confirmNewBowler();
 // }
 // });
+// Export functions to global scope for HTML onclick handlers
+Object.assign(window, {
+  showMatchOverview,
+  onNewPlayersClick,
+  onNewMatchClick,
+  openPopOutScoreboard,
+  swapCurrentInning,
+  addRuns,
+  addCustomRuns,
+  addCustomExtra,
+  fallWickets,
+  handleUndo,
+  resetMatch,
+  doNothing,
+  doNothing2,
+  handleNewPlayer,
+  confirmNewBowler,
+  doNothingBowler,
+  confirmNewBatsman,
+  doNothing3,
+  doNothing4,
+  // generateDocx,
+  closeResultModal,
+  doNothing5,
+  closeMatchOverviewModal,
+  setStriker,
+  onNewBowlerClick,
+  addCustomRuns,
+  addCustomExtra
+});
