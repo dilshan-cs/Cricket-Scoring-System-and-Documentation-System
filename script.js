@@ -378,10 +378,12 @@ function fallWickets(type) {
   matchData.fallOfWickets.push(`${matchData.totalRuns}`);
 
   outBatsman.isOut = true;
+  console.log(addBatsmen);
   if (addBatsmen === true) {
     openNewBatsmanModal();
   }
   addBatsmen = true;
+  console.log(addBatsmen);
   updateDisplay();
   checkWinCondition();
 
