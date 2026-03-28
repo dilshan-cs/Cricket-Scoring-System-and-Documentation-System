@@ -1,9 +1,12 @@
+
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
 import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
+// Import config
+import { firebaseConfig } from "./config.js";
 
-import{firebaseConfig} from "./config.js";
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -41,8 +44,7 @@ const initialInningData = () => ({
 let inning1Data = initialInningData();
 let inning2Data = initialInningData();
 let currentInning = 1;
-let addBatsmen = true
-
+let addBatsmen = true;
 // Global reference that points to the data of the active inning
 let matchData = inning1Data;
 const syncChannel = new BroadcastChannel('cricket_scoring_sync');
@@ -73,6 +75,11 @@ let matchId2;
 if (matchData === inning1Data) {
   matchId1 = "MATCH_" + Date.now() + "inning1"; // Generate a unique ID based on timestamp  
 }
+// else if (matchData === inning2Data) {
+//   matchId2 = "MATCH_" + Date.now() + "inning2"; // Generate a unique ID based on timestamp
+// }
+// console.log(matchId1);
+// console.log(matchId2);
 
 function saveMatchToFirebase() {
   const db = getDatabase(app);
@@ -85,6 +92,7 @@ function saveMatchToFirebase() {
     set(matchRef, matchData);
   }
 }
+
 
 let undoStack = [];
 let playersStoredToastTimer = null;
@@ -315,7 +323,7 @@ function confirmNewBowler(newName) {
 function doNothingBowler() {
   document.getElementById('new-bowler-modal').classList.remove('show');
 }
-
+let pendingStrikerIndex = -1;
 
 function fallWickets(type) {
   saveStateForUndo();
@@ -341,7 +349,7 @@ function fallWickets(type) {
       invalidBallCheckBox.checked = false;
       // if (runs === 1 || runs === 3 || runs === 5) swapStriker();
       matchData.extraRuns += runs;
-      matchData.wickets+=1;
+      matchData.wickets += 1;
       recordBall(`WR${runs}`, `WICKET! ${currentBatsman.name} is RUN OUT with ${runs} runs`, false);
     }
     else {
@@ -351,31 +359,31 @@ function fallWickets(type) {
       currentBatsman.balls += 1;
       document.getElementById('custom-runs-input-runout').value = '';
       // if (runs === 1 || runs === 3 || runs === 5) swapStriker();
-      matchData.wickets+=1;
+      matchData.wickets += 1;
       recordBall(`WR${runs}`, `WICKET! ${currentBatsman.name} is RUN OUT with ${runs} runs`, true);
     }
   }
   else {
     bowlerIs.wickets += 1;
     currentBatsman.balls += 1;
-    matchData.wickets+=1;
+    matchData.wickets += 1;
     recordBall('W', `WICKET! ${currentBatsman.name} is OUT`, true);
   }
 
   const outBatsman = matchData.batsmen[strikerIndex];
   matchData.dismissedBatsmen.push(outBatsman);
-  // matchData.wickets += 1;
 
   // Record Fall of Wicket (Wickets-Runs format)
   // matchData.fallOfWickets.push(`${matchData.wickets}-${matchData.totalRuns} (${outBatsman.name}, ${matchData.overs})`);
   matchData.fallOfWickets.push(`${matchData.totalRuns}`);
 
   outBatsman.isOut = true;
-  if(addBatsmen === true){
+  if (addBatsmen === true) {
     openNewBatsmanModal();
   }
   updateDisplay();
   checkWinCondition();
+
 }
 
 
@@ -668,6 +676,7 @@ function updateDisplay(runs) {
   updateInningBadge();
   updateFallOfWickets();
   broadcastUpdate();
+  saveMatchToFirebase();
 }
 
 function updateFallOfWickets() {
@@ -1095,7 +1104,7 @@ const formatBowler = (bowler) => {
 };
 
 
-function generatePDF() {
+function generateDocx() {
   const element = document.getElementById('match-report-template');
   element.style.display = 'block';
 
@@ -1124,21 +1133,56 @@ function generatePDF() {
   document.getElementById('report-commentary-1').innerHTML = inning1Data.commentary.map(c => `<p>${c}</p>`).join('');
   document.getElementById('report-commentary-2').innerHTML = inning2Data.commentary.map(c => `<p>${c}</p>`).join('');
 
-  const opt = {
-    margin: 1,
-    filename: `Match_Report_${inning1Data.teamName}_vs_${inning2Data.teamName}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-  };
+  // const opt = {
+  //   margin: 1,
+  //   filename: `Match_Report_${inning1Data.teamName}_vs_${inning2Data.teamName}.docx`,
+  //   image: { type: 'jpeg', quality: 0.98 },
+  //   html2canvas: { scale: 2 },
+  //   jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+  // };
 
-  html2pdf().set(opt).from(element).save();
+  // html2pdf().set(opt).from(element).save();
+
+
+  const filename = `Match_Report_${inning1Data.teamName}_vs_${inning2Data.teamName}.docx`;
+
+  const styles = `
+    <style>
+      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+      h1 { color: #2c3e50; text-align: center; }
+      h2 { color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+      h3 { color: #2980b9; }
+      table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+      th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+      th { background-color: #f2f2f2; }
+      .highlight-result { font-weight: bold; color: #e74c3c; font-size: 1.2em; }
+      .report-score { font-weight: bold; margin-bottom: 10px; }
+      .report-inning { margin-bottom: 20px; }
+    </style>
+  `;
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Match Report</title>
+        ${styles}
+      </head>
+      <body>
+        <div class="report-container">
+          ${element.innerHTML}
+        </div>
+      </body>
+    </html>
+  `;
+
+  const converted = htmlDocx.asBlob(htmlContent);
+  saveAs(converted, filename);
 
   setTimeout(() => {
     element.style.display = 'none';
   }, 1000);
-
-  // resetMatch();
 }
 
 
@@ -1182,6 +1226,7 @@ function closeResultModal() {
 //   confirmNewBowler();
 // }
 // });
+
 // Export functions to global scope for HTML onclick handlers
 Object.assign(window, {
   showMatchOverview,
@@ -1203,7 +1248,7 @@ Object.assign(window, {
   confirmNewBatsman,
   doNothing3,
   doNothing4,
-  // generateDocx,
+  generateDocx,
   closeResultModal,
   doNothing5,
   closeMatchOverviewModal,

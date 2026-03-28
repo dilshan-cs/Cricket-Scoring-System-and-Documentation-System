@@ -1,5 +1,6 @@
-// Your web app's Firebase configuration
-const firebaseConfig = {
+// config.js
+// IMPORTANT: Do NOT commit this file to Git.
+export const firebaseConfig = {
   apiKey: "AIzaSyA1MOp2UolylrRwSJhVM1ECBvhBKmrdVPc",
   authDomain: "cricket-scoring-data.firebaseapp.com",
   databaseURL: "https://cricket-scoring-data-default-rtdb.firebaseio.com",

@@ -7,6 +7,8 @@
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/evidenceprime/html-docx-js@master/dist/html-docx.js"></script>
 </head>
 
 <body>
@@ -210,7 +212,7 @@
                 <p class="section-label">Select Inning</p>
                 <div class="inning-selector">
                     <label><input type="radio" name="inning-radio" value="1" checked> Inning 1</label>
-                    <label><input type="radio" name="inning-radio" value="2"> Inning 2</label>
+                    <label><input type="radio" name="inning-radio" value="2" checked> Inning 2</label>
                 </div>
             </div>
 
@@ -317,7 +319,8 @@
             <h2 id="result-title">Match Finished!</h2>
             <p id="result-message"></p>
             <div class="modal-actions result-actions">
-                <button class="btn-confirm" onclick="generatePDF()">Download PDF Report</button>
+                <button class="btn-confirm" onclick="generateDocx()">Download DOCX Report</button>
+
                 <button class="btn-cancel" onclick="closeResultModal()">Close</button>
             </div>
         </div>
@@ -359,7 +362,7 @@
                 </div>
             </div>
             <div class="modal-actions result-actions" style="margin-top: 20px;">
-                <button class="btn-confirm" onclick="generatePDF()">Download PDF Report</button>
+                <button class="btn-confirm" onclick="generateDocx()">Download DOCX Report</button>
                 <button class="btn-cancel" onclick="closeMatchOverviewModal()">Close</button>
             </div>
         </div>
